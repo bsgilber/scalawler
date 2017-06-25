@@ -2,8 +2,7 @@ package com.belike.water
 
 import org.jsoup.select.Elements
 import org.mongodb.scala.MongoCollection
-import org.mongodb.scala.bson.collection.mutable.Document
-
+import org.mongodb.scala.bson.collection.immutable.Document
 import scala.collection.mutable
 
 /**
@@ -36,9 +35,9 @@ object CoreUtils {
           set += current
           queue ++= query(current).getOrElse(List[String]()).toSet
         }
+        Thread.sleep(10)
+        loop(queue)
       }
-      Thread.sleep(10)
-      loop(queue)
     }
     loop(q)
   }
