@@ -42,10 +42,12 @@ class RedditActor extends Actor {
     site match {
       case x if x.contains("comments") => {
         val doc = Jsoup.connect(site).get()
-        val users = doc.select("a.author").select("a[href]").first().ownText()
-        val comments = doc.select("div.content").select("div.md > p").first().text()
-        redditWrite(site, users, comments)
-
+        for(i <- 0 to doc.select("div.entry").select("a.author").select("a[href]").size()-1) {
+          val user = doc.select("div.entry").select("a.author").select("a[href]").get(i).ownText()
+          val comment = doc.select("div.entry").select("div.md > p").get(i).text()
+          println(user + " ==> " + comment)
+          if(user!="user") redditWrite(site, user, comment)
+        }
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))
       }
