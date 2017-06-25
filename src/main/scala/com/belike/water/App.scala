@@ -1,9 +1,11 @@
 package Scalakka
 import akka.actor.{ActorSystem, Props}
+import com.belike.water.CoreActor
 
 object App {
-  
   def main(args : Array[String]) {
+    import CoreActor._
+
     var rootURL = ""
     if(args.isEmpty) {
       rootURL = "https://www.reddit.com/r/finance/"
@@ -13,9 +15,7 @@ object App {
     }
     val system = ActorSystem("Scalakka-Scraper")
     // default Actor constructor
-    val mainActor = system.actorOf(Props[ParentActor])
-//    mainActor ! List("depth", rootURL)
-    mainActor ! List("breadth", rootURL)
+    val mainActor = system.actorOf(Props[CoreActor])
+    mainActor ! initReddit(rootURL)
   }
-
 }

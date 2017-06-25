@@ -3,18 +3,21 @@ package com.belike.water
 import java.util.Date
 import akka.actor.Actor
 import org.jsoup.Jsoup
-import org.mongodb.scala.bson.collection.mutable.Document
+import org.mongodb.scala.Document
 import scala.util.control.NonFatal
-import com.belike.water.CoreActor
 
 /**
   * Created by sergeon on 6/24/17.
   */
+object RedditActor {
+  case class search(rootURL: String)
+}
+
 class RedditActor extends Actor {
+  import RedditActor._
+
   def receive = {
-    case a: List[String] => a match {
-      case List("breadth", _) => CoreUtils.bfs(a(1))
-    }
+    case search(rootURL) => CoreUtils.bfs(rootURL)(queryWebsite)
   }
 
   def redditWrite(url: String, user: String, comment: String): Document = {
@@ -27,14 +30,17 @@ class RedditActor extends Actor {
   def queryWebsite(site: String): Option[List[String]] = {
     try {
       val doc = Jsoup.connect(site).get()
-      println(doc.select("a.author").select("a[href]").first().ownText())
-      println(doc.select("div.md > p").first().text())
+      val user = doc.select("a.author").select("a[href]").first().ownText()
+      val comment = doc.select("div.md > p").first().text()
+      redditWrite(site, user, comment)
+
       val link = doc.select("a")
       Some(CoreUtils.getLinks(link, "abs:href"))
     }
     catch {
       case NonFatal(e) =>
-        println(e.getMessage)
+//        this is mostly links that can't be followed
+//        println(e.getMessage)
         None
     }
   }
