@@ -14,6 +14,7 @@ import scala.util.control.NonFatal
   * this is going to be a really shitty and manual bubbling up of interesting ideas and comments
   */
 class SimpleParseActor extends Actor {
+
   def receive = {
     case _ => println("")
   }
@@ -23,7 +24,7 @@ class SimpleParseActor extends Actor {
     val df = new SparkConn("simple-parse").collectionAsDF(collection)
     df.where(phraseFile.map(df.col("comment") === _).reduce(_ || _)).show()
   }
-  
+
   // refactor these writers later
   def parserOutputWriter(comment: String, keywords: List[String], count: Int): Unit = {
     try {

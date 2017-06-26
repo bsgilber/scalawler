@@ -4,7 +4,7 @@ import java.util.Date
 
 import akka.actor.Actor
 import org.jsoup.Jsoup
-import org.mongodb.scala.{Completed, Document, Observer}
+import org.mongodb.scala.Document
 
 import scala.util.control.NonFatal
 
@@ -18,8 +18,15 @@ object RedditActor {
 class RedditActor extends Actor {
   import RedditActor._
 
+  private var subReddit: String = "<==>"
+
   def receive = {
-    case search(rootURL) => CoreUtils.bfs(rootURL)(queryWebsite)
+    case search(rootURL) => {
+      this.subReddit = "/r/"+rootURL.split("/")(4)+"/"
+      CoreUtils.bfs(rootURL)(queryWebsite)
+//      println(rootURL)
+//      println(subReddit)
+    }
   }
 
   def redditWrite(url: String, user: String, comment: String): Unit = {
@@ -42,21 +49,26 @@ class RedditActor extends Actor {
     site match {
       case x if x.contains("comments") => {
         val doc = Jsoup.connect(site).get()
-        for(i <- 0 to doc.select("div.entry").select("a.author").select("a[href]").size()-1) {
+        for(i <- 0 to  Math.min(doc.select("div.entry").select("a.author").select("a[href]").size(),
+                                doc.select("div.entry").select("div.md > p").size()) - 1) {
           val user = doc.select("div.entry").select("a.author").select("a[href]").get(i).ownText()
           val comment = doc.select("div.entry").select("div.md > p").get(i).text()
           println(user + " ==> " + comment)
-          if(user!="user") redditWrite(site, user, comment)
+//          if(user!="user") redditWrite(site, user, comment)
         }
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))
       }
-      case x if x.contains("reddit") => {
+      case x if x.contains(subReddit) => {
+        println(site)
         val doc = Jsoup.connect(site).get()
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))
       }
-      case _ => None
+      case _ =>
+        println("no match")
+        println(subReddit)
+        None
     }
   }
 }
