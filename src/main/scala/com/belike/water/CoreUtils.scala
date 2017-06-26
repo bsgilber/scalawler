@@ -3,7 +3,9 @@ package com.belike.water
 import org.jsoup.select.Elements
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.collection.immutable.Document
+
 import scala.collection.mutable
+import scala.io.Source
 
 /**
   * Created by sergeon on 6/24/17.
@@ -11,6 +13,16 @@ import scala.collection.mutable
 object CoreUtils {
   def mongoConn(collection: String): MongoCollection[Document] = {
     new MongoDBConn().collectionHandle(collection)
+  }
+
+  def readFileAsVector(filename: String): List[String] = {
+    val bufferedSource = Source.fromFile(filename)
+    try {
+      (for (line <- bufferedSource.getLines()) yield line).toList
+    }
+    finally{
+      bufferedSource.close
+    }
   }
 
   def getLinks(el: Elements, attrib: String): List[String] = {
