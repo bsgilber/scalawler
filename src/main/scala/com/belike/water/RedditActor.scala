@@ -1,13 +1,10 @@
 package com.belike.water
 
 import java.util.Date
-
 import akka.actor.Actor
 import org.jsoup.Jsoup
 import org.mongodb.scala.Document
-
 import scala.util.control.NonFatal
-
 /**
   * Created by sergeon on 6/24/17.
   */
@@ -24,8 +21,6 @@ class RedditActor extends Actor {
     case search(rootURL) => {
       this.subReddit = "/r/"+rootURL.split("/")(4)+"/"
       CoreUtils.bfs(rootURL)(queryWebsite)
-//      println(rootURL)
-//      println(subReddit)
     }
   }
 
@@ -35,6 +30,7 @@ class RedditActor extends Actor {
       val collect = handle.collectionHandle("Reddit")
       val doc = Document("timestamp" -> new Date(),
         "url" -> url,
+        "subreddit" -> subReddit,
         "user" -> user,
         "comment" -> comment)
 
@@ -53,21 +49,18 @@ class RedditActor extends Actor {
                                 doc.select("div.entry").select("div.md > p").size()) - 1) {
           val user = doc.select("div.entry").select("a.author").select("a[href]").get(i).ownText()
           val comment = doc.select("div.entry").select("div.md > p").get(i).text()
-          println(user + " ==> " + comment)
-//          if(user!="user") redditWrite(site, user, comment)
+          if(user!="user") redditWrite(site, user, comment)
         }
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))
       }
       case x if x.contains(subReddit) => {
-        println(site)
         val doc = Jsoup.connect(site).get()
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))
       }
       case _ =>
-        println("no match")
-        println(subReddit)
+        println("No Match")
         None
     }
   }
