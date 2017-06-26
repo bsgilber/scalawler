@@ -3,8 +3,6 @@ package com.belike.water
 import java.util.Date
 
 import akka.actor.Actor
-import com.mongodb.spark.MongoSpark
-import org.apache.spark.sql.DataFrame
 import org.mongodb.scala.Document
 
 import scala.util.control.NonFatal

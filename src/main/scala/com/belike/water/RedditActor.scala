@@ -42,14 +42,21 @@ class RedditActor extends Actor {
   }
 
   def queryWebsite(site: String): Option[List[String]] = {
+    println("(q-_-)9")
     site match {
       case x if x.contains("comments") => {
         val doc = Jsoup.connect(site).get()
-        for(i <- 0 to  Math.min(doc.select("div.entry").select("a.author").select("a[href]").size(),
-                                doc.select("div.entry").select("div.md > p").size()) - 1) {
-          val user = doc.select("div.entry").select("a.author").select("a[href]").get(i).ownText()
-          val comment = doc.select("div.entry").select("div.md > p").get(i).text()
-          if(user!="user") redditWrite(site, user, comment)
+        for (i <- 0 to Math.min(doc.select("div.entry").select("a.author").select("a[href]").size(),
+          doc.select("div.entry").select("div.md > p").size()) - 1) {
+          try {
+            val user = doc.select("div.entry").select("a.author").select("a[href]").get(i).ownText()
+            val comment = doc.select("div.entry").select("div.md > p").get(i).text()
+            if (user != "user") redditWrite(site, user, comment)
+          }
+          catch {
+            case NonFatal(e) => println(e)
+          }
+          Thread.sleep(100)
         }
         val link = doc.select("a")
         Some(CoreUtils.getLinks(link, "abs:href"))

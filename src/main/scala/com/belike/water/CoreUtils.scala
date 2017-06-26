@@ -47,7 +47,7 @@ object CoreUtils {
           set += current
           queue ++= query(current).getOrElse(List[String]()).toSet
         }
-        Thread.sleep(10)
+        Thread.sleep(100)
         loop(queue)
       }
     }

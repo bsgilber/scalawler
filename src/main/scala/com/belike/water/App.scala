@@ -8,7 +8,7 @@ object App {
 
     var rootURL = ""
     if(args.isEmpty) {
-      rootURL = "https://www.reddit.com/r/finance/"
+      rootURL = "https://www.reddit.com/r/shutupandtakemymoney/"
     }
     else {
       rootURL = args(0)
