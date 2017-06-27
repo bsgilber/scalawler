@@ -1,5 +1,8 @@
 package com.belike.water
 
+import java.io.FileInputStream
+import java.util.Properties
+
 import org.jsoup.select.Elements
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -13,6 +16,12 @@ import scala.io.Source
 object CoreUtils {
   def mongoConn(collection: String): MongoCollection[Document] = {
     new MongoDBConn().collectionHandle(collection)
+  }
+
+  def loadProperties(propertiesFile: String): Properties = {
+    val prop = new Properties()
+    prop.load(new FileInputStream(propertiesFile))
+    prop
   }
 
   def readFileAsVector(filename: String): List[String] = {

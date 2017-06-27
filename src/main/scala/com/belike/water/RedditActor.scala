@@ -42,7 +42,7 @@ class RedditActor extends Actor {
   }
 
   def queryWebsite(site: String): Option[List[String]] = {
-    println("(q-_-)9")
+    println(site)
     site match {
       case x if x.contains("comments") => {
         val doc = Jsoup.connect(site).get()

@@ -1,10 +1,8 @@
 package com.belike.water
 
 import java.util.Date
-
 import akka.actor.Actor
 import org.mongodb.scala.Document
-
 import scala.util.control.NonFatal
 /**
   * Created by sergeon on 6/25/17.
