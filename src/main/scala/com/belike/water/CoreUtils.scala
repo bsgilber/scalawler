@@ -3,6 +3,7 @@ package com.belike.water
 import java.io.FileInputStream
 import java.util.Properties
 
+import org.apache.http.HttpHost
 import org.jsoup.select.Elements
 import org.mongodb.scala.MongoCollection
 import org.mongodb.scala.bson.collection.immutable.Document

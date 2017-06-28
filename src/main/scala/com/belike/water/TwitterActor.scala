@@ -1,7 +1,7 @@
 package com.belike.water
 
 import java.text.SimpleDateFormat
-import java.util.{Date, List, Properties}
+import java.util.{Date, Properties}
 
 import akka.actor.Actor
 import org.mongodb.scala.{Document, MongoCollection}
@@ -13,20 +13,21 @@ import scala.util.control.NonFatal
   * Created by sergeon on 6/26/17.
   */
 object TwitterActor {
-  case class search(keyword: String)
+  case class searchTwitter(keyword: String)
 }
 class TwitterActor extends Actor {
   import TwitterActor._
 
-  val props: Properties = CoreUtils.loadProperties("twitter.properties")
+  val props: Properties = CoreUtils.loadProperties("src/main/conf/twitter.properties")
   val handle: MongoDBConn = new MongoDBConn()
   val collect: MongoCollection[Document] = handle.collectionHandle("Twitter")
 
   def receive = {
-    case search(keyword) => {
+    case searchTwitter(keyword) => {
       val queryResult = twitterSearch(keyword)
       twitterWrite(queryResult, keyword)
     }
+    case _ => println("no match")
   }
 
   def twitterConfig: Twitter = {
@@ -65,6 +66,7 @@ class TwitterActor extends Actor {
             "createDT" -> tweet.getCreatedAt)
 
           handle.commitInsert(collect.insertOne(doc))
+          Thread.sleep(100)
         }
       }
     }

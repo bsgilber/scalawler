@@ -16,6 +16,7 @@ object App {
     val system = ActorSystem("Scalakka-Scraper")
     // default Actor constructor
     val mainActor = system.actorOf(Props[CoreActor])
-    mainActor ! initReddit(rootURL)
+    mainActor ! initTwitter("\"why isn't there\"")
+    mainActor ! initTwitter("is there a")
   }
 }
